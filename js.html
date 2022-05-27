@@ -1,0 +1,51 @@
+<script>
+  google.script.run.withSuccessHandler(showData).getData();
+  function showData(dataArray){
+    $(document).ready(function(){
+      $('#data-table').DataTable({
+        data: dataArray,
+        order: [[0, 'desc']],
+
+              initComplete: function () {
+            this.api()
+                .columns()
+                .every(function () {
+                    var column = this;
+                    var select = $('<select><option value="">--เลือก--</option></select>')
+                        .appendTo($(column.header()) )
+                        .on('change', function () {
+                            var val = $.fn.dataTable.util.escapeRegex($(this).val());
+ 
+                            column.search(val ? '^' + val + '$' : '', true, false).draw();
+                        });
+                    column
+                        .data()
+                        .unique()
+                        .sort()
+                        .each(function (d, j) {
+                            select.append('<option value="' + d + '">' + d.substr(0,30) + '</option>');
+                        });
+                });
+        },
+
+
+
+
+        columns: [
+          {"title":"วันประกาศ"},
+          {"title":"ประเภท"},
+          {"title":"หัวข้อ"},
+          {"title":"รายละเอียด"},
+          {"title":"กลุ่มงาน"},
+          {"title":"ข้อมูลเพิ่มเติม" ,"render": function(data, type, row, meta){
+            if(type === 'display'){
+                data = '<a href="' + data + '" target="_blank"> Link </a>';
+            }
+            return data;
+           }
+         }
+        ]
+      });
+    });
+  }
+</script>
